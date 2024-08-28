@@ -20,6 +20,7 @@ model User {
   isProfileInitialized Boolean  @default(false)
   posts       Post[]
   comments    Comment[]
+  postVisits  PostVisit[]   
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -33,6 +34,7 @@ model Post {
   authorId  String     @db.ObjectId
   visits    Int        @default(0)
   comments  Comment[]
+  postVisits PostVisit[]  // Removed `@relation(onDelete: Cascade)`
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt  
 }
@@ -45,4 +47,14 @@ model Comment {
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String   @db.ObjectId
   createdAt   DateTime  @default(now())
+}
+
+model PostVisit {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String @db.ObjectId
+  postId  String @db.ObjectId
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade) // Specify `onDelete` here
+  user    User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, postId])
 }

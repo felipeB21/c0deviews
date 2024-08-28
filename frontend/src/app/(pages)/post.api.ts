@@ -73,3 +73,28 @@ export async function getPostSlug(params: SlugParams) {
     return { success: false, error: "An error occurred" };
   }
 }
+
+export async function deletePost(params: SlugParams) {
+  const { slug } = params;
+
+  try {
+    const res = await fetch(`http://localhost:4000/post/delete/${slug}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      return { success: true, msg: data.message };
+    } else {
+      return { success: false, msg: data.message || "An error occurred" };
+    }
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    return { success: false, msg: "An error occurred while deleting the post" };
+  }
+}

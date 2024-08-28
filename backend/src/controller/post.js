@@ -36,7 +36,7 @@ export const createPost = async (req, res) => {
         title,
         body,
         authorId,
-        createdAt,
+        visits: 0,
       },
     });
 
@@ -88,6 +88,7 @@ export const getPosts = async (req, res) => {
 
 export const getPostSlug = async (req, res) => {
   const { slug } = req.params;
+  const userVisit = req.session.user?.id;
 
   try {
     const findPost = await prisma.post.findUnique({
@@ -99,6 +100,7 @@ export const getPostSlug = async (req, res) => {
         body: true,
         _count: true,
         visits: true,
+        authorId: true,
         createdAt: true,
         author: {
           select: {
@@ -126,10 +128,70 @@ export const getPostSlug = async (req, res) => {
       return res.status(404).json({ msg: "Post not found" });
     }
 
+    if (userVisit) {
+      const userVisitExists = await prisma.postVisit.findUnique({
+        where: {
+          userId_postId: {
+            userId: userVisit,
+            postId: findPost.id,
+          },
+        },
+      });
+
+      if (!userVisitExists) {
+        // If the user hasn't visited the post yet, increment the visits
+        await prisma.post.update({
+          where: { slug },
+          data: {
+            visits: {
+              increment: 1,
+            },
+          },
+        });
+
+        // Record the user's visit in the PostVisit table
+        await prisma.postVisit.create({
+          data: {
+            userId: userVisit,
+            postId: findPost.id,
+          },
+        });
+      }
+    }
+
     return res.status(200).json(findPost);
   } catch (error) {
     console.error("Error retrieving post:", error);
     return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const deletePost = async (req, res) => {
+  const userId = req.user.id;
+  const { slug } = req.params;
+  try {
+    const post = await prisma.post.findUnique({
+      where: { slug },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    if (post.authorId !== userId) {
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to delete this post" });
+    }
+
+    await prisma.post.delete({
+      where: { slug },
+    });
+
+    return res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 

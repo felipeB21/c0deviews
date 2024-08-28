@@ -4,6 +4,7 @@ import { messageValidation, postValidation } from "../schemas/post.js";
 import {
   createComment,
   createPost,
+  deletePost,
   getPosts,
   getPostSlug,
 } from "../controller/post.js";
@@ -21,5 +22,6 @@ router.post(
   createComment
 );
 router.post("/create", isAuth, validateData(postValidation), createPost);
+router.delete("/delete/:slug", isAuth, deletePost);
 
 export default router;

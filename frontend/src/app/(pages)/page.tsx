@@ -108,7 +108,9 @@ export default function Home() {
               </li>
             ))
           ) : (
-            <p>{error}</p>
+            <p className="flex items-center justify-center min-h-[50dvh]">
+              {error}
+            </p>
           )}
         </ul>
       </section>
