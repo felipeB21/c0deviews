@@ -16,7 +16,7 @@ export async function createPost(post: any) {
     const data = await res.json();
 
     if (res.ok) {
-      return { success: true, data };
+      return { success: true, data: data.post };
     } else {
       return {
         success: false,
