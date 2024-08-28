@@ -12,10 +12,15 @@ interface ErrorDetail {
   message: string;
 }
 
+interface PostData {
+  slug: string;
+}
+
 interface PostResponse {
   success: boolean;
   message?: string;
   error?: string;
+  data?: PostData;
   details?: ErrorDetail[];
 }
 
@@ -32,6 +37,7 @@ export default function PostForm() {
 
     if (res.success) {
       toast.success(res.message || "Post created");
+      router.push(`/questions/${res.data?.slug}`);
     } else {
       setErrors(res.error || "An error occurred");
       if (res.details) {

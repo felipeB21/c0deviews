@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { MessageSquare, Eye } from "lucide-react";
+import MainSkeleton from "@/components/main-skeleton";
 
 interface Post {
   id: string;
@@ -32,6 +33,7 @@ interface Comments {
 export default function Home() {
   const [data, setData] = useState<Post[] | undefined>(undefined);
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -39,8 +41,10 @@ export default function Home() {
 
       if (res && res.success) {
         setData(res.data);
+        setLoading(false);
       } else {
         setError(res?.error || "No posts found");
+        setLoading(false);
       }
     };
 
@@ -57,62 +61,66 @@ export default function Home() {
       </div>
       <Separator />
       <section>
-        <ul>
-          {data ? (
-            data.map((post) => (
-              <li key={post.id}>
-                <div className="flex gap-10 px-2 py-6">
-                  <div className="text-sm text-neutral-400">
-                    <div className="flex items-center gap-2">
-                      <p>{post._count.comments}</p>
-                      <MessageSquare className="h-4 w-4" />
+        {loading ? (
+          <MainSkeleton />
+        ) : (
+          <ul>
+            {data ? (
+              data.map((post) => (
+                <li key={post.id}>
+                  <div className="flex gap-10 px-2 py-6">
+                    <div className="text-sm text-neutral-400">
+                      <div className="flex items-center gap-2">
+                        <p>{post._count.comments}</p>
+                        <MessageSquare className="h-4 w-4" />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p>{post.visits}</p>
+                        <Eye className="h-4 w-4" />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <p>{post.visits}</p>
-                      <Eye className="h-4 w-4" />
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Link
-                      className="text-xl text-sky-500"
-                      href={`/questions/${post.slug}`}
-                    >
-                      {post.title}
-                    </Link>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col gap-2">
                       <Link
-                        className="flex items-center gap-2"
-                        href={`/profile/${post.author.username}`}
+                        className="text-xl text-sky-500"
+                        href={`/questions/${post.slug}`}
                       >
-                        <Image
-                          className="w-5 h-5 rounded-full object-cover"
-                          src={post.author.avatar}
-                          alt="avatar"
-                          width={100}
-                          height={100}
-                        />
-                        <p className="text-sm text-sky-400">
-                          {post.author.username}
-                        </p>
+                        {post.title}
                       </Link>
-                      <Link href={`/questions/${post.slug}`}>
-                        <p className="text-sm dark:text-neutral-300 text-neutral-500">
-                          Asked{" "}
-                          {format(new Date(post.createdAt), "MMMM d, yyyy")}
-                        </p>
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          className="flex items-center gap-2"
+                          href={`/profile/${post.author.username}`}
+                        >
+                          <Image
+                            className="w-5 h-5 rounded-full object-cover"
+                            src={post.author.avatar}
+                            alt="avatar"
+                            width={100}
+                            height={100}
+                          />
+                          <p className="text-sm text-sky-400">
+                            {post.author.username}
+                          </p>
+                        </Link>
+                        <Link href={`/questions/${post.slug}`}>
+                          <p className="text-sm dark:text-neutral-300 text-neutral-500">
+                            Asked{" "}
+                            {format(new Date(post.createdAt), "MMMM d, yyyy")}
+                          </p>
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <Separator />
-              </li>
-            ))
-          ) : (
-            <p className="flex items-center justify-center min-h-[50dvh]">
-              {error}
-            </p>
-          )}
-        </ul>
+                  <Separator />
+                </li>
+              ))
+            ) : (
+              <p className="flex items-center justify-center min-h-[50dvh]">
+                {error}
+              </p>
+            )}
+          </ul>
+        )}
       </section>
     </main>
   );
