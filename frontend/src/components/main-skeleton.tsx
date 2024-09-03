@@ -2,7 +2,7 @@ import { Separator } from "./ui/separator";
 import { Skeleton } from "./ui/skeleton";
 
 export default function MainSkeleton() {
-  const skeletons = Array.from({ length: 10 }, (_, index) => index); // Create an array of 10 elements
+  const skeletons = Array.from({ length: 10 }, (_, index) => index);
 
   return (
     <>

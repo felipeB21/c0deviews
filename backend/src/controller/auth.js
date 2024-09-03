@@ -102,6 +102,14 @@ export const login = async (req, res) => {
       return res.status(404).json({ error: "Invalid email or password" });
     }
 
+    if (user.isGoogleAccount)
+      return res
+        .status(400)
+        .json({
+          error:
+            "It seems that you are trying to log in with an account that was created using Google. Please log in with Google.",
+        });
+
     const isPasswordValid = await compare(password, user.password);
 
     if (!isPasswordValid) {

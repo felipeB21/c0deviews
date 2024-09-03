@@ -181,11 +181,11 @@ export default function AlterSession() {
         </DropdownMenu>
       ) : (
         <div className="flex items-center gap-5">
-          <Link href={"/login"} className="text-sm font-medium">
-            Sign in
-          </Link>
-          <Link href={"/register"} className={buttonVariants()}>
+          <Link href={"/register"} className="text-sm font-medium">
             Sign up
+          </Link>
+          <Link href={"/login"} className={buttonVariants()}>
+            Sign in
           </Link>
         </div>
       )}

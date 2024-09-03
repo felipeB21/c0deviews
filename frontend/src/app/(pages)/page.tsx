@@ -84,7 +84,7 @@ export default function Home() {
                         className="text-xl text-sky-500"
                         href={`/questions/${post.slug}`}
                       >
-                        {post.title}
+                        <h3>{post.title}</h3>
                       </Link>
                       <div className="flex items-center gap-2">
                         <Link

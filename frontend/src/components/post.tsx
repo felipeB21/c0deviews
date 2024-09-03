@@ -163,7 +163,7 @@ export default function PostComponent({
   return (
     <div>
       <div>
-        <h3 className="text-2xl font-medium">{data.title}</h3>
+        <h1 className="text-2xl font-medium">{data.title}</h1>
 
         <div className="mt-2 mb-3 flex items-center justify-between">
           <div className="text-sm text-neutral-400 flex items-center gap-5">
